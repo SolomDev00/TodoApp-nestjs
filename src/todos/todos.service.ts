@@ -10,12 +10,13 @@ import { Todo } from './schemas/todo.schema';
 
 import { Query } from 'express-serve-static-core';
 import { User } from '../auth/schemas/user.schema';
+import { Model } from 'mongoose';
 
 @Injectable()
 export class TodoService {
   constructor(
     @InjectModel(Todo.name)
-    private todoModel: mongoose.Model<Todo>,
+    private todoModel: Model<Todo>,
   ) {}
 
   async findAll(query: Query): Promise<Todo[]> {
@@ -39,8 +40,8 @@ export class TodoService {
     return todos;
   }
 
-  async create(book: Todo, user: User): Promise<Todo> {
-    const data = Object.assign(book, { user: user._id });
+  async create(todo: Todo, user: User): Promise<Todo> {
+    const data = Object.assign(todo, { user: user._id });
 
     const res = await this.todoModel.create(data);
     return res;
@@ -53,13 +54,13 @@ export class TodoService {
       throw new BadRequestException('Please enter correct id.');
     }
 
-    const book = await this.todoModel.findById(id);
+    const todo = await this.todoModel.findById(id);
 
-    if (!book) {
+    if (!todo) {
       throw new NotFoundException('Todo not found.');
     }
 
-    return book;
+    return todo;
   }
 
   async updateById(id: string, book: Todo): Promise<Todo> {
@@ -68,6 +69,8 @@ export class TodoService {
       runValidators: true,
     });
   }
+
+
 
   async deleteById(id: string): Promise<Todo> {
     return await this.todoModel.findByIdAndDelete(id);
