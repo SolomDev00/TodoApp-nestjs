@@ -4,8 +4,8 @@ import mongoose from 'mongoose';
 import { User } from '../../auth/schemas/user.schema';
 
 export enum Category {
- SCHOOL = "School",
- VOLLEY = "Volley"
+  SCHOOL = 'School',
+  VOLLEY = 'Volley',
 }
 
 @Schema({

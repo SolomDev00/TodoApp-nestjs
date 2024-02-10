@@ -1,13 +1,12 @@
 /* eslint-disable prettier/prettier */
 import {
-  BadRequestException,
   Injectable,
+  BadRequestException,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
 import { Todo } from './schemas/todo.schema';
-
 import { Query } from 'express-serve-static-core';
 import { User } from '../auth/schemas/user.schema';
 import { Model } from 'mongoose';
@@ -19,8 +18,8 @@ export class TodoService {
     private todoModel: Model<Todo>,
   ) {}
 
-  async findAll(query: Query): Promise<Todo[]> {
-    const resPerPage = 2;
+  async findAll(query: Query, user: User): Promise<Todo[]> {
+    const resPerPage = 10;
     const currentPage = Number(query.page) || 1;
     const skip = resPerPage * (currentPage - 1);
 
@@ -34,27 +33,27 @@ export class TodoService {
       : {};
 
     const todos = await this.todoModel
-      .find({ ...keyword })
+      .find({ ...keyword, user: user.id })
       .limit(resPerPage)
       .skip(skip);
     return todos;
   }
 
   async create(todo: Todo, user: User): Promise<Todo> {
-    const data = Object.assign(todo, { user: user._id });
+    const data = Object.assign(todo, { user: user.id });
 
     const res = await this.todoModel.create(data);
     return res;
   }
 
-  async findById(id: string): Promise<Todo> {
+  async findById(id: string, user: User): Promise<Todo> {
     const isValidId = mongoose.isValidObjectId(id);
 
     if (!isValidId) {
       throw new BadRequestException('Please enter correct id.');
     }
 
-    const todo = await this.todoModel.findById(id);
+    const todo = await this.todoModel.findOne({ id: id, user: user.id });
 
     if (!todo) {
       throw new NotFoundException('Todo not found.');
@@ -63,16 +62,18 @@ export class TodoService {
     return todo;
   }
 
-  async updateById(id: string, book: Todo): Promise<Todo> {
-    return await this.todoModel.findByIdAndUpdate(id, book, {
-      new: true,
-      runValidators: true,
-    });
+  async updateById(id: string, todo: Todo, user: User): Promise<Todo> {
+    return await this.todoModel.findOneAndUpdate(
+      { id: id, user: user.id },
+      todo,
+      {
+        new: true,
+        runValidators: true,
+      },
+    );
   }
 
-
-
-  async deleteById(id: string): Promise<Todo> {
-    return await this.todoModel.findByIdAndDelete(id);
+  async deleteById(id: string, user: User): Promise<Todo> {
+    return await this.todoModel.findOneAndDelete({ id: id, user: user.id });
   }
 }

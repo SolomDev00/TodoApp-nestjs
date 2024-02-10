@@ -15,7 +15,6 @@ import { TodoService } from './todos.service';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
 import { Todo } from './schemas/todo.schema';
-
 import { Query as ExpressQuery } from 'express-serve-static-core';
 import { AuthGuard } from '@nestjs/passport';
 
@@ -24,8 +23,9 @@ export class TodoController {
   constructor(private TodService: TodoService) {}
 
   @Get()
-  async getAllBooks(@Query() query: ExpressQuery): Promise<Todo[]> {
-    return this.TodService.findAll(query);
+  @UseGuards(AuthGuard())
+  async getAllTodos(@Query() query: ExpressQuery, @Req() req): Promise<Todo[]> {
+    return this.TodService.findAll(query, req.user);
   }
 
   @Post()
@@ -39,27 +39,32 @@ export class TodoController {
   }
 
   @Get(':id')
+  @UseGuards(AuthGuard())
   async getTodo(
     @Param('id')
     id: string,
+    @Req() req,
   ): Promise<Todo> {
-    return this.TodService.findById(id);
+    return this.TodService.findById(id, req.user);
   }
 
-@Put(':id')
-async updateTodo(
-  @Param('id') id: string,
-  @Body() todo: UpdateTodoDto,
-): Promise<Todo> {
-  return this.TodService.updateById(id, todo);
-}
-
+  @Put(':id')
+  @UseGuards(AuthGuard())
+  async updateTodo(
+    @Param('id') id: string,
+    @Body() todo: UpdateTodoDto,
+    @Req() req,
+  ): Promise<Todo> {
+    return this.TodService.updateById(id, todo, req.user);
+  }
 
   @Delete(':id')
+  @UseGuards(AuthGuard())
   async deleteTodo(
     @Param('id')
     id: string,
+    @Req() req,
   ): Promise<Todo> {
-    return this.TodService.deleteById(id);
+    return this.TodService.deleteById(id, req.user);
   }
 }

@@ -1,10 +1,5 @@
 /* eslint-disable prettier/prettier */
-import {
-  IsEmpty,
-  IsEnum,
-  IsOptional,
-  IsString,
-} from 'class-validator';
+import { IsEmpty, IsEnum, IsOptional, IsString } from 'class-validator';
 import { User } from '../../auth/schemas/user.schema';
 import { Category } from '../schemas/todo.schema';
 
