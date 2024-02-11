@@ -5,7 +5,7 @@ import * as edge from 'selenium-webdriver/edge';
 
 @Injectable()
 export class LinkedinService {
-  async scrapeProfile(): Promise<any> {
+  async scrapeProfile(profileLink: string): Promise<any> {
     const driver: WebDriver = await new Builder()
       .forBrowser('MicrosoftEdge')
       .setEdgeOptions(
@@ -25,12 +25,14 @@ export class LinkedinService {
       const loginButton = await driver.findElement(
         By.css('button[type="submit"]'),
       );
+
       await emailInput.sendKeys('solomdev0@gmail.com');
       await passwordInput.sendKeys('Eslam Wael111');
       await driver.sleep(3000);
       await loginButton.click();
       await driver.sleep(1500);
-      await driver.get('https://www.linkedin.com/in/mohamedref/');
+      await driver.get(profileLink);
+
       await driver.sleep(5000);
       const nameElement = await driver.wait(
         until.elementLocated(By.css('h1')),
