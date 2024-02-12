@@ -62,15 +62,23 @@ export class TodoService {
     return todo;
   }
 
-  async updateById(id: string, todo: Todo, user: User): Promise<Todo> {
-    return await this.todoModel.findOneAndUpdate(
-      { id: id, user: user.id },
-      todo,
+  async updateById(id: string, updatedTodo: Todo, user: User): Promise<Todo> {
+    const isValidId = mongoose.isValidObjectId(id);
+    if (!isValidId) {
+      throw new BadRequestException('Please enter correct id.');
+    }
+    const todo = await this.todoModel.findOneAndUpdate(
+      { _id: id, user: user.id },
+      updatedTodo,
       {
         new: true,
         runValidators: true,
       },
     );
+    if (!todo) {
+      throw new NotFoundException('Todo not found.');
+    }
+    return todo;
   }
 
   async deleteById(id: string, user: User): Promise<Todo> {
