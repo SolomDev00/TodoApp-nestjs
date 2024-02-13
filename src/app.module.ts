@@ -7,6 +7,7 @@ import { AppService } from './app.service';
 import { TodoModule } from './todos/todos.module';
 import { AuthModule } from './auth/auth.module';
 import { LinkedinModule } from './linkedin/linkedin.module';
+import { ScrapeModule } from './scrape/scrape.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { LinkedinModule } from './linkedin/linkedin.module';
     TodoModule,
     AuthModule,
     LinkedinModule,
+    ScrapeModule,
   ],
   controllers: [AppController],
   providers: [AppService],

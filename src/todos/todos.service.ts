@@ -53,7 +53,7 @@ export class TodoService {
       throw new BadRequestException('Please enter correct id.');
     }
 
-    const todo = await this.todoModel.findOne({ id: id, user: user.id });
+    const todo = await this.todoModel.findOne({ _id: id, user: user.id });
 
     if (!todo) {
       throw new NotFoundException('Todo not found.');
@@ -82,6 +82,6 @@ export class TodoService {
   }
 
   async deleteById(id: string, user: User): Promise<Todo> {
-    return await this.todoModel.findOneAndDelete({ id: id, user: user.id });
+    return await this.todoModel.findOneAndDelete({ _id: id, user: user.id });
   }
 }

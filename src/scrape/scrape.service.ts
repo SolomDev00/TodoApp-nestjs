@@ -4,13 +4,13 @@ import { WebDriver, Builder, By, until } from 'selenium-webdriver';
 import * as edge from 'selenium-webdriver/edge';
 
 @Injectable()
-export class LinkedinService {
-  async scrapeProfile(profileLink: string): Promise<any> {
+export class ScrapeService {
+  async scrapeProfile(profileURL: string): Promise<any> {
     const driver: WebDriver = await new Builder()
       .forBrowser('MicrosoftEdge')
       .setEdgeOptions(
         new edge.Options().addArguments(
-          '--headless',
+          // '--headless',
           '--disable-extensions',
           '--enable-chrome-browser-cloud-management',
           '--remote-debugging-port=0',
@@ -25,21 +25,23 @@ export class LinkedinService {
       const loginButton = await driver.findElement(
         By.css('button[type="submit"]'),
       );
-
-      await emailInput.sendKeys('solomdev0@gmail.com');
+      await emailInput.sendKeys('kevinmashell@gmail.com');
       await passwordInput.sendKeys('Eslam Wael111');
       await driver.sleep(3000);
       await loginButton.click();
       await driver.sleep(1500);
-      await driver.get(profileLink);
-
+      await driver.get(profileURL);
       await driver.sleep(5000);
       const nameElement = await driver.wait(
         until.elementLocated(By.css('h1')),
         10000,
       );
       const name = await nameElement.getText();
-      const photoElement = await driver.findElement(By.id('ember29'));
+      const photoElement = await driver.findElement(
+        By.css(
+          'div.pv-top-card__non-self-photo-wrapper m10 button img.pv-top-card-profile-picture__image pv-top-card-profile-picture__image--show evi-image ember-view',
+        ),
+      );
       const imageURL = await photoElement.getAttribute('src');
       return { name, imageURL };
     } finally {
